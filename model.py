@@ -36,10 +36,10 @@ class GPT2:
                                      )
         # Decode the output
         decoded_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
-        pred_labels = decoded_output.split('>>')[1].strip()
+        pred_labels = decoded_output.split(self.SPECIAL_TOKEN)[1].strip()
         return pred_labels
 
 
 model_path = str(Path(__file__).parent / 'best_val_rouge1_model.pt')
 gpt2_model = GPT2(model_file_path=model_path)
-gpt2_model.generate_replay("Navigate to a different URL after 5 seconds when a key is pressed")
+# gpt2_model.predict("Navigate to a different URL after 5 seconds when a key is pressed")
