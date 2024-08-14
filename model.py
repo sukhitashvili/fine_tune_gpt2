@@ -1,4 +1,6 @@
+import pickle
 from pathlib import Path
+from typing import List
 
 import torch
 from transformers import GPT2Tokenizer
@@ -17,6 +19,13 @@ class GPT2:
         special_tokens_dict = {'pad_token': PADDING_TOKEN}
         self.tokenizer.add_special_tokens(special_tokens_dict)
         self.SPECIAL_TOKEN = '>>'
+        # Load the GT token ids list from the file
+        with open(str(Path(__file__).parent / 'gt_token_ids.pkl'), 'rb') as file:
+            self.gt_token_id_list = pickle.load(file)
+        self.gt_token_ids_set = set(self.gt_token_id_list)
+        self.gt_token_threshold = 0.5  # TODO: check how this value affect rouge scores
+        self.default_response = ("Sorry, I cannot understand you prompt :(  \n"
+                                 "Please, provide prompts only related to the node generation topic")
 
     def predict(self, text_input: str) -> str:
         text_input += self.SPECIAL_TOKEN
@@ -37,9 +46,21 @@ class GPT2:
         # Decode the output
         decoded_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
         pred_labels = decoded_output.split(self.SPECIAL_TOKEN)[1].strip()
+
+        # Check if the output contains correct Node tokens
+        if not self.contains_valid_tokens(token_ids=self.tokenizer.encode(pred_labels)):
+            return self.default_response
         return pred_labels
+
+    def contains_valid_tokens(self, token_ids: List[int]) -> bool:
+        gen_token_set = set(token_ids)
+        diff = gen_token_set - self.gt_token_ids_set
+        if (len(diff) / len(gen_token_set)) < self.gt_token_threshold:
+            return True
+        return False
 
 
 model_path = str(Path(__file__).parent / 'best_val_rouge1_model.pt')
 gpt2_model = GPT2(model_file_path=model_path)
-# gpt2_model.predict("Navigate to a different URL after 5 seconds when a key is pressed")
+# response = gpt2_model.predict("Navigate to a different URL after 5 seconds when a key is pressed")
+# print(response)
