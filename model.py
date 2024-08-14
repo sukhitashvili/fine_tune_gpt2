@@ -16,14 +16,16 @@ class GPT2:
         PADDING_TOKEN = "<|PAD|>"
         special_tokens_dict = {'pad_token': PADDING_TOKEN}
         self.tokenizer.add_special_tokens(special_tokens_dict)
+        self.SPECIAL_TOKEN = '>>'
 
     def predict(self, text_input: str) -> str:
+        text_input += self.SPECIAL_TOKEN
         output_text = self.generate_replay(text_input=text_input)
         return output_text
 
     @torch.no_grad()
     def generate_replay(self, text_input: str):
-        input_ids = self.tokenizer(text_input, return_tensors='pt')
+        input_ids = self.tokenizer.encode(text_input, return_tensors='pt')
         output = self.model.generate(input_ids=input_ids.to(self.device),
                                      do_sample=True,
                                      max_new_tokens=10,
@@ -40,3 +42,4 @@ class GPT2:
 
 model_path = str(Path(__file__).parent / 'best_val_rouge1_model.pt')
 gpt2_model = GPT2(model_file_path=model_path)
+gpt2_model.generate_replay("Navigate to a different URL after 5 seconds when a key is pressed")
