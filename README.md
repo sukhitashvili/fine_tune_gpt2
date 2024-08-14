@@ -26,6 +26,13 @@ The fine-tuned GPT2 bot is hosted here (The bot might be in sleep mode, so pleas
 - The model was fine-tuned on prompt-to-nodes pair examples;
 - The whole training script is located in the `fine_tune_gpt2.ipynb` notebook file.
 
+## Possible future improvements/experiments:
+- Larger models with customized smaller context size can be trained on this dataset. Because average prompt length in token space is 
+around 35-40 tokens, I think usage of 1024 context length is unnecessary. Additional, with will reduce model slightly as positional encoding
+can be reduced let's say down to 512 context length.
+- If bigger models are used, keeping they previously leaned knowledge would be more beneficial and thus methods like LORA should be used.
+- Model quantization for inference speed-up and memory usage reduction.
+
 
 
 
