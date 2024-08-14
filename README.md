@@ -13,8 +13,15 @@ The fine-tuned GPT2 bot is hosted here (The bot might be in sleep mode, so pleas
       1. `pip install -r requirements.txt`
       2. `streamlit run app.py`
 
+## Description of the files in the repo
+1. `fine_tune_gpt2.ipynb` contains all the training code and prompts at the bottom, used to prompt ChatGPT to generated data;
+2. `best_val_rouge1_model.pt` Trained model GPT2 small;
+3. `data.csv` data CSV file generated via ChatGPT;
+4. `app.py` contains code to define UI using Streamlit package;
+5. `model.py` contains text processing code by GPT2;
 
-Description of the fine-tuning procedure:
+
+## Description of the fine-tuning procedure:
 - I used HuggingFace package to load pre-trained GPT2-small model and fine-tuned it on a toy dataset generated with help of ChatGPT;
 - The model was fine-tuned on prompt-to-nodes pair examples;
 - The whole training script is located in the `fine_tune_gpt2.ipynb` notebook file.
