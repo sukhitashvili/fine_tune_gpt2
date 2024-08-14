@@ -28,12 +28,28 @@ class GPT2:
                                  "Please, provide prompts only related to the node generation topic")
 
     def predict(self, text_input: str) -> str:
+        """
+        Generates model's response
+        Args:
+            text_input: User query
+
+        Returns:
+            Generated text
+        """
         text_input += self.SPECIAL_TOKEN
         output_text = self.generate_replay(text_input=text_input)
         return output_text
 
     @torch.no_grad()
     def generate_replay(self, text_input: str):
+        """
+        Generates model's response and checks if response is strictly about topic of nodes.
+        Args:
+            text_input: User query
+
+        Returns:
+            Generated text
+        """
         input_ids = self.tokenizer.encode(text_input, return_tensors='pt')
         output = self.model.generate(input_ids=input_ids.to(self.device),
                                      do_sample=True,
@@ -53,6 +69,16 @@ class GPT2:
         return pred_labels
 
     def contains_valid_tokens(self, token_ids: List[int]) -> bool:
+        """
+        Validates is generated tokens are part of nodes' token ids.
+        If generated tokens are outside of this space, this means model has generated response to random query or
+        it was hallucinating.
+        Args:
+            token_ids:
+
+        Returns:
+
+        """
         gen_token_set = set(token_ids)
         diff = gen_token_set - self.gt_token_ids_set
         if (len(diff) / len(gen_token_set)) < self.gt_token_threshold:

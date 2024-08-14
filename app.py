@@ -7,6 +7,14 @@ from model import gpt2_model
 
 # Streamed response emulator
 def response_generator(user_query: str):
+    """
+    Generates model's response
+    Args:
+        user_query: user's query
+
+    Returns:
+
+    """
     reply = gpt2_model.predict(text_input=user_query)
     split_strings = reply.split(' ')
     for word in split_strings:
@@ -21,6 +29,14 @@ def greeting():
 
 
 def write_stream(stream):
+    """
+    Showed text as a stream
+    Args:
+        stream: input text
+
+    Returns:
+
+    """
     result = ""
     container = st.empty()
     for chunk in stream:
