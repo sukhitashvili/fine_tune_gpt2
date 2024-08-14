@@ -1,1 +1,3 @@
 .idea/*
+*.pdf
+best_train_loss_model.pt
