@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import List
 
 import torch
+from peft import PeftModel
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from transformers import GPT2Tokenizer
 
 torch.set_default_dtype(torch.bfloat16)
@@ -86,7 +88,56 @@ class GPT2:
         return False
 
 
-model_path = str(Path(__file__).parent / 'best_val_rouge1_model.pt')
-gpt2_model = GPT2(model_file_path=model_path)
-# response = gpt2_model.predict("Navigate to a different URL after 5 seconds when a key is pressed")
+class FlanT5:
+    def __init__(self, model_file_path: str):
+        self.device = torch.device('cpu')
+        model_name = 'google/flan-t5-small'
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        original_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
+        model = PeftModel.from_pretrained(original_model, model_id=model_file_path, is_trainable=False,
+                                          torch_dtype=torch.bfloat16)
+        model.merge_and_unload()  # merge lora layers back into weights matrix
+        model.to(self.device)
+        self.model = model
+        self.model.eval()
+
+    def predict(self, text_input: str) -> str:
+        """
+        Generates model's response
+        Args:
+            text_input: User query
+
+        Returns:
+            Generated text
+        """
+        output_text = self.generate_replay(text_input=text_input)
+        return output_text
+
+    @torch.no_grad()
+    def generate_replay(self, text_input: str):
+        """
+        Generates model's response and checks if response is strictly about topic of nodes.
+        Args:
+            text_input: User query
+
+        Returns:
+            Generated text
+        """
+        input_ids = self.tokenizer.encode(text_input, return_tensors='pt')
+        output = self.model.generate(input_ids=input_ids.to(self.device),
+                                     do_sample=True,
+                                     max_new_tokens=10,
+                                     pad_token_id=self.tokenizer.pad_token_id,
+                                     eos_token_id=self.tokenizer.eos_token_id,
+                                     top_k=20,
+                                     top_p=0.95,
+                                     )
+        # Decode the output
+        decoded_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
+        return decoded_output
+
+
+model_path = str(Path(__file__).parent / 't5_adapter_ckpt')
+t5_model = FlanT5(model_file_path=model_path)
+# response = t5_model.predict("Navigate to a different URL after 5 seconds when a key is pressed")
 # print(response)

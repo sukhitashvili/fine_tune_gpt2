@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from model import gpt2_model
+from model import t5_model
 
 
 # Streamed response emulator
@@ -15,7 +15,7 @@ def response_generator(user_query: str):
     Returns:
 
     """
-    reply = gpt2_model.predict(text_input=user_query)
+    reply = t5_model.predict(text_input=user_query)
     split_strings = reply.split(' ')
     for word in split_strings:
         yield word + ' '
