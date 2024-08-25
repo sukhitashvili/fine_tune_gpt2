@@ -126,7 +126,7 @@ class FlanT5:
         input_ids = self.tokenizer.encode(text_input, return_tensors='pt')
         output = self.model.generate(input_ids=input_ids.to(self.device),
                                      do_sample=True,
-                                     max_new_tokens=10,
+                                     max_new_tokens=30,
                                      pad_token_id=self.tokenizer.pad_token_id,
                                      eos_token_id=self.tokenizer.eos_token_id,
                                      top_k=20,
