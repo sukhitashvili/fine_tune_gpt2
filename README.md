@@ -1,6 +1,8 @@
-# GPT2 Fine-Tuning Repository
+# GPT2 and Flan-T5-small Fine-Tuning Repository
 
 The fine-tuned GPT2 bot is hosted here (The bot might be in sleep mode, so please awake it up and wait a bit until it loads): [Link](https://superbot-gpt2.streamlit.app/)
+
+The fine-tuned Flan-T5-small bot is hosted here (The bot might be in sleep mode, so please awake it up and wait a bit until it loads): [Link](https://superbot-t5-small.streamlit.app/)
 
 
 ## Commands to host the bot locally:
@@ -24,11 +26,12 @@ The fine-tuned GPT2 bot is hosted here (The bot might be in sleep mode, so pleas
 ## Description of the fine-tuning procedure:
 - I used HuggingFace package to load pre-trained GPT2-small model and fine-tuned it on a toy dataset generated with help of ChatGPT;
 - The model was fine-tuned on prompt-to-nodes pair examples;
-- The whole training script is located in the `fine_tune_gpt2.ipynb` notebook file.
+- The whole training scripts are located in the `fine_tune_gpt2.ipynb` and `fine_tune_flan-t5-small.ipynb` notebook 
+files.
 
 ## Possible future improvements/experiments:
 - Larger models with customized smaller context size can be trained on this dataset. Because average prompt length in token space is 
-around 35-40 tokens, I think usage of 1024 context length is unnecessary. Additional, with will reduce model slightly as positional encoding
+around 35-40 tokens, I think usage of 1024 context length is unnecessary. Additional, it will reduce model slightly as positional encoding table
 can be reduced let's say down to 512 context length.
 - If bigger models are used, keeping they previously leaned knowledge would be more beneficial and thus methods like LORA should be used.
 - Model quantization for inference speed-up and memory usage reduction.
